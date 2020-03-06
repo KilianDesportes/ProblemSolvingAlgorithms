@@ -21,7 +21,6 @@ initial_state([ [b, h, c],       % C'EST L'EXEMPLE PRIS EN COURS
                 [g,vide,e] ]).   % h1=4,   h2=5,   f*=5
 
 
-
 % AUTRES EXEMPLES POUR LES TESTS DE  A*
 
 /*
@@ -55,6 +54,11 @@ initial_state([ [a, b, c],
 final_state([[a, b,  c],
              [h,vide, d],
              [g, f,  e]]).
+
+% final_state([[1, 2, 3, 4],
+%             [5, 6, 7, 8],
+%             [9, 10, 11, 12],
+%             [13,14,15,vide]]).
 
 			 
    %********************
@@ -151,7 +155,8 @@ delete(N,X,[Y|L], [Y|R]) :-
 	*/
 
 	
-   coordonnees([L,C], Mat, Elt) :- nth1(L,Mat,Ligne),nth1(C,Ligne,Elt).
+coordonnees([L,C], Mat, Elt) :- nth1(L,Mat,Ligne),nth1(C,Ligne,Elt).
+
 
 											 
    %*************
@@ -159,8 +164,8 @@ delete(N,X,[Y|L], [Y|R]) :-
    %*************
    
 heuristique(U,H) :-
-    heuristique1(U, H).  % au debut on utilise l'heuristique 1 
-%   heuristique2(U, H).  % ensuite utilisez plutot l'heuristique 2  
+    % heuristique1(U, H).  % au debut on utilise l'heuristique 1 
+	heuristique2(U, H).  % ensuite utilisez plutot l'heuristique 2  
    
    
    %****************
@@ -169,20 +174,30 @@ heuristique(U,H) :-
    % Nombre de pieces mal placees dans l'etat courant U
    % par rapport a l'etat final F
 
-   
+   % METHODE 1
 heuristique1(U, 0) :- final_state(U).
 heuristique1(U,H) :- final_state(F), compareMat(U,F,H).
+
 compareElement(A,A,0).
 compareElement(A,B,1) :- A \= B , A \= vide.
 compareElement(A,B,0) :- A \= B, A = vide.
+
 compareLigne([],[], 0).
-compareLigne([A|L],[B|L2], H) :-  compareElement(A,B,H1), compareLigne(L,L2,H2), H is H1 + H2.
+compareLigne([A|L],[B|L2], H) :-  compareElement(A,B,H1), 
+    compareLigne(L,L2,H2), H is H1 + H2.
+  
 compareMat([],[],0).
-compareMat([L1|R1],[L2|R2],H) :- compareLigne(L1,L2,H1), compareMat(R1,R2,H2), H is H1 + H2.
+compareMat([L1|R1],[L2|R2],H) :- compareLigne(L1,L2,H1), 
+    compareMat(R1,R2,H2), H is H1 + H2.
+
+   % METHODE 2
 
 heuristique1Bis(U,R) :- findall(S,malplace(U,S),T),length(T,R).
-malplace(U,E):- final_state(Fin), coordonnees([L,C],U,E),coordonnees([L,C],Fin,E2),E \= E2, E \= vide.
 
+malplace(U,E):- final_state(Fin), coordonnees([L,C],U,E),
+    coordonnees([L,C],Fin,E2),E \= E2, E \= vide.
+
+   
    %****************
    %HEURISTIQUE no 2
    %****************
@@ -190,14 +205,14 @@ malplace(U,E):- final_state(Fin), coordonnees([L,C],U,E),coordonnees([L,C],Fin,E
    % Somme des distances de Manhattan à parcourir par chaque piece
    % entre sa position courante et sa positon dans l'etat final
 
-   
 dm(P,U,F,V) :- coordonnees([L1,C1],U,P), coordonnees([L2,C2],F,P),
-   V1 is abs(L2-L1), V2 is abs(C2-C1), V is V1+V2.
-  
+	V1 is abs(L2-L1), V2 is abs(C2-C1), V is V1+V2.
+   
 heuristique2(U, H) :- findall(S,malplace(U,S),T), sommeMan(U,T,H).
 
 sommeMan(_,[],0).
-sommeMan(U,[H|T],R) :- final_state(F), dm(H,U,F,R1), sommeMan(U,T,R2),
-   R is R1 + R2.
+sommeMan(U,[H|T],R) :- final_state(F), dm(H,U,F,R1), sommeMan(U,T,R2), 
+    R is R1 + R2.
+
 
 									

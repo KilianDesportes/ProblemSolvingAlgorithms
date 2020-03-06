@@ -40,15 +40,13 @@ Predicat principal de l'algorithme :
 
 */
 
-%*******************************************************************************
-
 :- ['avl.pl'].       % predicats pour gerer des arbres bin. de recherche   
 :- ['taquin.pl'].    % predicats definissant le systeme a etudier
 
 %*******************************************************************************
 
 main :-
-    % initialisations Pf, Pu et Q
+
     initial_state(S0),
     
     heuristique1(S0,F0),
@@ -62,18 +60,65 @@ main :-
     insert([ [F0,H0,G0], S0 ] , Pf, Pfa),
     insert([S0, [F0,H0,G0], nil, nil], Pu, Pua),
     
-    aetoile(Pf, Pu, Q).
-
+    aetoile(Pfa, Pua, Q).
 
 
 
 %*******************************************************************************
+affiche_solution(F) :- write_state(F).
 
-aetoile(Pf, Ps, Qs) :-
-	true.   %********
-			% A FAIRE
-			%********
-	
+%simule les 4 regles de deplacement (right,up,down,left)
+%pour trouver les combinaisons voisines (renvoi les possibilités)
 
+%On doit appeler ca sur la combinaison avec le pf minimum
+
+
+%%%LOOP SUCCESSORS _____
+%CAS 1 : si une combinaison n'est pas dans pu ou pf, on l'ajoute 
+% (par exemple la combinaison "right") : simple
+
+%CAS 2 : si elle est deja dans pu/pf, on verifie les F,G et H de celle ci
+%si le F est plus petit que le F qui était deja prévu, on enleve l'ancien F,
+% et on ajoute le nouveau 
+
+%CAS 3 :si la case appartient a QU (deja traité), je fais rien : simple
+%_____________
+
+%on appel le loopsuccessors sur le retour du expand (les 4 possibilités).
+
+%On recupere le Pf minimal grace a ca, on trouve dnc un etat suivant, 
+% et on rappel le expand sur celui la
+
+% Qu = elements traité par le loop successors
+% On a Pu et Pf pour le suppressmin
+% Pu pour avoir F,H,G
+% Pf pour recuperer celui avec le f min
+% Pu recherche par etat au lieu de rechercher par f
+% expand --> 
+%       utiliser findall([U,[F,H,G],pere,A], (rule(Pere,1,U,A)), ListSuccessors)
+% on peut ensuite appeler loopsuccessors avec le resultat ListSuccessors
+% 
+% conseil de commence par :
+% expand, facile a tester, on donne un etat on calcul les suivants
+% TESTER LE EXPAND AVANT DE PASSER AU LOOPSUCCESSORS
+
+% ensuite
+% le corps principal de A*, quand pf et pu sont vides, pas de solution,
+% et le cas ou Pf min est l'etat final, c'est la solution, 
+% 
+
+expand().
+
+loop_successors().
+
+aetoile(Pf, Ps, _) :- empty(Pf),
+    empty(Ps),
+    writeln("PAS DE SOLUTION!").
+
+
+atoile(Pf,_,_) :- suppress_min(F,Pf,_), final_state(F),
+	affiche_solution(F).
 	
-   
+atoile(Pf,_,_) :- 
+    suppress_min(U,Pf,_),
+    writeln(U).
