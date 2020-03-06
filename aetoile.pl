@@ -56,15 +56,108 @@ main :-
     empty(Pf),
     empty(Pu),
     empty(Q),
-    
-    insert([ [F0,H0,G0], S0 ] , Pf, Pfa),
-    insert([S0, [F0,H0,G0], nil, nil], Pu, Pua),
-    
-    aetoile(Pfa, Pua, Q).
 
+    writeln("Stack init"),
+    
+    insert([[F0,H0,G0],S0],Pf,Pfa),
+    insert([S0,[F0,H0,G0],nil,nil],Pu,Pua),
+    
+    writeln("Insert OK\n"),
+    
+    writeln("A* execution :\n"),
+
+    aetoile(Pfa, Pua, Q),
+
+    writeln("\nA* OK").
 
 
 %*******************************************************************************
+
+expand(U, Gu, LS) :- findall([S,[Fs,Hs,Gs],U,A], calcul_cost(U,Gu,Fs,Gs,Hs,S,A), LS).
+
+calcul_cost(U,Gu,Fs,Gs,Hs,S,A) :- 
+    rule(A,K,U,S), 
+    heuristique2(S, Hs), 
+    Gs is Gu + K, 
+    Fs is Gs + Hs.
+
+loop_successors([], Pf, Pu, _, Pf, Pu).
+loop_successors([S1|R], Pf, Pu, Q, Pfa, Pua) :-
+    deal_with_ONE_successor(S1, Pf, Pu, Q, Pft, Put),
+    loop_successors(R,Pft,Put,Q,Pfa,Pua).
+
+deal_with_ONE_successor([U,FHG1,P1,A1], Pf, Pu, Q, Pf2, Pu2):-
+    ( belongs([U,_,_,_],Q) ->
+
+        Pf2 = Pf, 
+        Pu2 = Pu  
+    ;
+        ( (suppress([U,FHG2,_,_],Pu,Pu1)),
+            suppress([FHG2,U],Pf,Pf1) ->
+
+            ( FHG1 @< FHG2 ->
+
+                insert([U,FHG1,P1,A1],Pu1,Pu2),
+                insert([FHG1,U],Pf1,Pf2)
+        
+            ;
+                Pf2 = Pf,
+                Pu2 = Pu
+            )
+
+        ;
+
+        insert([FHG1,U],Pf,Pf2),
+        insert([U,FHG1,P1,A1],Pu,Pu2)
+
+        )
+
+).	
+
+aetoile(Pf, Pu, _) :- 
+    empty(Pf),
+    empty(Pu),
+    writeln("PAS DE SOLUTION!").
+
+aetoile(Pf,Pu,_) :-
+    final_state(F),
+    suppress_min([[_,_,_],F],Pf,_), 
+    suppress([F,_,_,_],Pu,_), 
+    writeln("Affiche solution").
+
+aetoile(Pf,Pu,Q) :-
+
+    writeln("----AVANT----\n"),
+
+    write("PF = "),
+    put_flat(Pf),nl,
+    write("PU = "),
+    put_flat(Pu),nl,
+    write("Q = "),
+    put_flat(Q),nl,	
+
+    suppress_min([[_,G,_],U],Pf,Pf1),
+    suppress([U,FHG,P,A],Pu,Pu1),
+    expand(U,G,LS),
+    loop_successors(LS,Pf1, Pu1, Q, Pf2, Pu2),
+    insert([U,FHG,P,A],Q,Q2),
+
+    writeln("\n----APRES----\n"),
+
+    write("PF = "),
+    put_flat(Pf2),nl,
+    write("PU = "),
+    put_flat(Pu2),nl,
+    write("Q = "),
+    put_flat(Q2),nl,
+
+    writeln("\n----NEXT CALL----\n"),
+    aetoile(Pf2,Pu2,Q2). 
+
+    
+    
+
+
 affiche_solution(F) :- write_state(F).
 
 %simule les 4 regles de deplacement (right,up,down,left)
@@ -106,19 +199,3 @@ affiche_solution(F) :- write_state(F).
 % le corps principal de A*, quand pf et pu sont vides, pas de solution,
 % et le cas ou Pf min est l'etat final, c'est la solution, 
 % 
-
-expand().
-
-loop_successors().
-
-aetoile(Pf, Ps, _) :- empty(Pf),
-    empty(Ps),
-    writeln("PAS DE SOLUTION!").
-
-
-atoile(Pf,_,_) :- suppress_min(F,Pf,_), final_state(F),
-	affiche_solution(F).
-	
-atoile(Pf,_,_) :- 
-    suppress_min(U,Pf,_),
-    writeln(U).

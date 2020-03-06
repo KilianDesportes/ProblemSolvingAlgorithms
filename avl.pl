@@ -129,10 +129,10 @@ subtree(Elem, avl(G,Racine,D,H), A) :-
 	% Rotations dans un avl
 	%----------------------
 	% Les rotations ci-dessous d�crivent uniquement les cas ou la rotation est possible.
-	% Dans les autres cas, ces relations �chouent ; plus pr�cis�ment :
-	% a/ si l'arbre est un avl vide, alors aucune rotation n'est possible ;
-	% b/ si l'arbre est un avl non vide mais si son ss-arbre gauche est un avl vide
-	%    alors la rotation droite n'est pas possible ;
+	% Dans les Avlautres cas, ces relations �chouent ; plus pr�cis�ment :
+	% a/ si l'aAvlrbre est un avl vide, alors aucune rotation n'est possible ;
+	% b/ si l'aAvlrbre est un avl non vide mais si son ss-arbre gauche est un avl vide
+	%    alors Avlla rotation droite n'est pas possible ;
 	% c/ si l'arbre est un avl non vide mais si son ss-arbre droite est un avl vide
 	%    alors la rotation gauche n'est pas possible.
 

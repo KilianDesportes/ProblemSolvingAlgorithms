@@ -17,8 +17,9 @@
    
 
 initial_state([ [b, h, c],       % C'EST L'EXEMPLE PRIS EN COURS
-                [a, f, d],       % 
-                [g,vide,e] ]).   % h1=4,   h2=5,   f*=5
+           [a, f, d],       % 
+          [g,vide,e] ]).   % h1=4,   h2=5,   f*=5
+
 
 
 % AUTRES EXEMPLES POUR LES TESTS DE  A*
@@ -54,6 +55,8 @@ initial_state([ [a, b, c],
 final_state([[a, b,  c],
              [h,vide, d],
              [g, f,  e]]).
+
+            
 
 % final_state([[1, 2, 3, 4],
 %             [5, 6, 7, 8],
