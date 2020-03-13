@@ -49,39 +49,33 @@ main :-
 
     initial_state(S0),
     
-    heuristique1(S0,F0),
     heuristique1(S0,H0),
     G0 is 0,
+    F0 is G0 + H0,
     
     empty(Pf),
     empty(Pu),
     empty(Q),
-
-    writeln("Stack init"),
     
     insert([[F0,H0,G0],S0],Pf,Pfa),
     insert([S0,[F0,H0,G0],nil,nil],Pu,Pua),
-    
-    writeln("Insert OK\n"),
-    
-    writeln("A* execution :\n"),
 
-    aetoile(Pfa, Pua, Q),
-
-    writeln("\nA* OK").
+    aetoile(Pfa, Pua, Q).
 
 
 %*******************************************************************************
 
-expand(U, Gu, LS) :- findall([S,[Fs,Hs,Gs],U,A], calcul_cost(U,Gu,Fs,Gs,Hs,S,A), LS).
+expand(U, Gu, LS) :- findall([S,[Fs,Hs,Gs],U,A], 
+    calcul_cost(U,Gu,Fs,Hs,Gs,S,A), LS).
 
-calcul_cost(U,Gu,Fs,Gs,Hs,S,A) :- 
+calcul_cost(U,Gu,Fs,Hs,Gs,S,A) :- 
     rule(A,K,U,S), 
-    heuristique2(S, Hs), 
+    heuristique1(S, Hs), 
     Gs is Gu + K, 
     Fs is Gs + Hs.
 
 loop_successors([], Pf, Pu, _, Pf, Pu).
+
 loop_successors([S1|R], Pf, Pu, Q, Pfa, Pua) :-
     deal_with_ONE_successor(S1, Pf, Pu, Q, Pft, Put),
     loop_successors(R,Pft,Put,Q,Pfa,Pua).
@@ -93,7 +87,7 @@ deal_with_ONE_successor([U,FHG1,P1,A1], Pf, Pu, Q, Pf2, Pu2):-
         Pu2 = Pu  
     ;
         ( (suppress([U,FHG2,_,_],Pu,Pu1)),
-            suppress([FHG2,U],Pf,Pf1) ->
+            suppress_min([FHG2,U],Pf,Pf1) ->
 
             ( FHG1 @< FHG2 ->
 
@@ -119,46 +113,38 @@ aetoile(Pf, Pu, _) :-
     empty(Pu),
     writeln("PAS DE SOLUTION!").
 
-aetoile(Pf,Pu,_) :-
+aetoile(Pf,Pu,Q) :-
     final_state(F),
-    suppress_min([[_,_,_],F],Pf,_), 
-    suppress([F,_,_,_],Pu,_), 
-    writeln("Affiche solution").
+    suppress_min([FHG,F],Pf,_), 
+    suppress([F,FHG,P,A],Pu,_), 
+    insert([F,FHG,P,A],Q,Q2),
+    affiche_solution(Q2,F).
 
 aetoile(Pf,Pu,Q) :-
 
-    writeln("----AVANT----\n"),
-
-    write("PF = "),
-    put_flat(Pf),nl,
-    write("PU = "),
-    put_flat(Pu),nl,
-    write("Q = "),
-    put_flat(Q),nl,	
-
-    suppress_min([[_,G,_],U],Pf,Pf1),
+    suppress_min([[_,_,G],U],Pf,Pf1),
     suppress([U,FHG,P,A],Pu,Pu1),
     expand(U,G,LS),
     loop_successors(LS,Pf1, Pu1, Q, Pf2, Pu2),
     insert([U,FHG,P,A],Q,Q2),
-
-    writeln("\n----APRES----\n"),
-
-    write("PF = "),
-    put_flat(Pf2),nl,
-    write("PU = "),
-    put_flat(Pu2),nl,
-    write("Q = "),
-    put_flat(Q2),nl,
-
-    writeln("\n----NEXT CALL----\n"),
     aetoile(Pf2,Pu2,Q2). 
 
-    
-    
+affiche_solution(Q,P) :- initial_state(I),suppress([P,_,I,A],Q,_),
+    write(P),
+    write(" <- "),
+    write(A),
+    write(" <- "),
+    write(I),
+    writeln(" <- Start").
 
-
-affiche_solution(F) :- write_state(F).
+    
+affiche_solution(Q,P) :- suppress([P,_,U,A],Q,Q2),
+        write(P),
+        write(" <- "),
+        write(A),
+        write(" <- "),
+        writeln(U),
+        affiche_solution(Q2,U).
 
 %simule les 4 regles de deplacement (right,up,down,left)
 %pour trouver les combinaisons voisines (renvoi les possibilités)

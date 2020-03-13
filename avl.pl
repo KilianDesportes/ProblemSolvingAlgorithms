@@ -139,21 +139,21 @@ subtree(Elem, avl(G,Racine,D,H), A) :-
 right_rotate(avl(G,R,D,_H), A_Apres) :-
 	height(D,HD),
 	G       = avl(SG,RG,SD,_HG),
-	height(SD,HSD),
-	H_Inter is 1 + max(HSD, HD),
+	height(SD,GsD),
+	H_Inter is 1 + max(GsD, HD),
 	Inter   = avl(SD,R,D,H_Inter),
-	height(SG,HSG),
-	H_Apres is 1 + max(HSG,H_Inter),
+	height(SG,GsG),
+	H_Apres is 1 + max(GsG,H_Inter),
 	A_Apres = avl(SG,RG,Inter,H_Apres).
 	
 left_rotate(avl(G,R,D,_), A_Apres) :-
 	height(G,HG),
 	D       = avl(SG,RD,SD,_),
-	height(SG,HSG),
-	H_Inter is 1 + max(HSG, HG),
+	height(SG,GsG),
+	H_Inter is 1 + max(GsG, HG),
 	Inter   = avl(G,R,SG,H_Inter),
-	height(SD,HSD),
-	H_Apres is 1 + max(H_Inter,HSD),
+	height(SD,GsD),
+	H_Apres is 1 + max(H_Inter,GsD),
 	A_Apres = avl(Inter,RD,SD,H_Apres).	
 
 	%---------------------------------
