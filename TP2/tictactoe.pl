@@ -140,6 +140,15 @@ alignement_gagnant(Ali, J) :- ground(Ali), possible(Ali,J).
 
 alignement_perdant(Ali, J) :- adversaire(J,J2), alignement_gagnant(Ali, J2).
 
+/* tests
+A = [x,x,x], alignement_gagnant(A,x).
+A = [x,x,o], alignement_gagnant(A,x).
+A = [x,x,_], alignement_gagnant(A,x).
+
+A = [o,o,o], alignement_perdant(A,x).
+A = [x,x,o], alignement_perdant(A,x).
+A = [x,x,_], alignement_perdant(A,x).
+*/
 
 /******************************
 DEFINITION D'UN ETAT SUCCESSEUR
