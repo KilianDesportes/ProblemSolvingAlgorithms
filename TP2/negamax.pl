@@ -52,10 +52,22 @@
 
 	- finalement le couple retourne par negamax est [Coup, V2]
 	avec : V2 is -V1 (cf. convention negamax vue en cours).
-
-A FAIRE : ECRIRE ici les clauses de negamax/5
 .....................................
 	*/
+
+negamax(J, Etat, Pmax, Pmax, [rien, Val]):-
+	heuristique(J,Etat,Val),!.
+
+negamax(J, Etat, _, _, [rien, Val]):-
+	situation_terminale(J,Etat),
+	heuristique(J,Etat,Val),!.
+
+negamax(J, Etat, P, Pmax, [Coup, Val]):-
+	successeurs(J,Etat,LS),
+	loop_negamax(J,P,Pmax,LS,LS2),
+	meilleur(LS2,[C1,V1]),
+	Coup = C1,
+	Val is -V1.
 
 
 	/*******************************************
@@ -72,9 +84,7 @@ A FAIRE : ECRIRE ici les clauses de negamax/5
 
 successeurs(J,Etat,Succ) :-
 	copy_term(Etat, Etat_Suiv),
-	findall([Coup,Etat_Suiv],
-		    successeur(J,Etat_Suiv,Coup),
-		    Succ).
+	findall([Coup,Etat_Suiv],successeur(J,Etat_Suiv,Coup),Succ).
 
 	/*************************************
          Boucle permettant d'appliquer negamax 
@@ -119,21 +129,32 @@ A FAIRE : commenter chaque litteral de la 2eme clause de loop_negamax/5,
 A FAIRE : ECRIRE ici les clauses de meilleur/2
 	*/
 
+meilleur([X],X).
 
+meilleur([[_,V1]|R], BestCouple) :- 
+	meilleur(R,[C2,V2]),
+	V1 > V2,
+	BestCouple = [C2,V2].
+
+meilleur([[C1,V1]|R], BestCouple) :- 
+	meilleur(R,[_,V2]),
+	V1 =< V2,
+	BestCouple = [C1,V1].
 
 	/******************
   	PROGRAMME PRINCIPAL
   	*******************/
 
-main(B,V, Pmax) :-
-
-	true.        
+main(C,V, Pmax) :-
+	situation_initiale(I),
+	joueur_initial(J),
+	negamax(J,I,1,Pmax,[C,V]).
 
 
 	/*
 A FAIRE :
-	Compléter puis tester le programme principal pour plusieurs valeurs de la profondeur maximale.
+	Complï¿½ter puis tester le programme principal pour plusieurs valeurs de la profondeur maximale.
 	Pmax = 1, 2, 3, 4 ...
-	Commentez les résultats obtenus.
+	Commentez les rï¿½sultats obtenus.
 	*/
 

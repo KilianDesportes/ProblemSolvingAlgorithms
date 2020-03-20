@@ -47,7 +47,18 @@ n'y a aucun emplacement libre : aucun joueur ne peut
 continuer � jouer (quel qu'il soit).
 ****************************************************/
 
-% situation_terminale(_Joueur, Situation) :-   ? ? ? ? ?
+situation_terminale(_, Situation) :- ground(Situation),!.
+
+
+situation_terminale(Joueur, Situation) :- 
+	alignement(Align,Situation),
+	alignement_gagnant(Align,Joueur),!.
+
+situation_terminale(Joueur, Situation) :- 
+	adversaire(Joueur,Adv),
+	alignement(Align,Situation),
+	alignement_gagnant(Align,Adv),!.
+
 
 /***************************
 DEFINITIONS D'UN ALIGNEMENT
@@ -158,8 +169,11 @@ lorsqu'un joueur J joue en coordonnees [L,C]
 */	
 
 % A FAIRE
-% successeur(J,Etat,[L,C]) :- ? ? ? ?  
-
+successeur(J,Etat,[L,C]) :-
+    nth1(L,Etat,Ligne),
+    nth1(C,Ligne,Element),
+	var(Element),
+	Element = J.
 /**************************************
 EVALUATION HEURISTIQUE D'UNE SITUATION
 **************************************/
