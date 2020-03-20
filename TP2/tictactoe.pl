@@ -119,9 +119,7 @@ faut pas realiser l'unification.
 */
 
 
-unifiable(X,_) :- var(X).
-unifiable(X,X).
-
+unifiable(X,J) :- not(not(X=J)).
 /**********************************
 DEFINITION D'UN ALIGNEMENT GAGNANT
 OU PERDANT POUR UN JOUEUR DONNE J
@@ -185,12 +183,16 @@ H = -10000,				% grand nombre approximant -infini
 alignement(Alig,Situation),
 alignement_perdant(Alig,J),!.	
 
+heuristique(J,Situation,H) :-
+    nbAliPotentielJoueur(J,Situation,A) ,
+	nbAliPotentielAdversaire(J,Situation,B),
+	H is A-B.
 
-% on ne vient ici que si les cut precedents n'ont pas fonctionne,
-% c-a-d si Situation n'est ni perdante ni gagnante.
+alignement_possible(J,Ali,M) :- alignement(Ali,M), possible(Ali,J).
 
-% A FAIRE 					cas 3
-% heuristique(J,Situation,H) :- ? ? ? ?
+nbAliPotentielJoueur(J,Situation,N):- findall(Ali, alignement_possible(J,Ali,Situation),List), length(List,N).
+
+nbAliPotentielAdversaire(J,Situation,N):-adversaire(J,A), findall(Ali, alignement_possible(A,Ali,Situation),List),length(List,N).
 
 
 
