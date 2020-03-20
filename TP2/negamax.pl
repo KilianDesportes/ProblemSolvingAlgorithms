@@ -145,10 +145,18 @@ meilleur([[C1,V1]|R], BestCouple) :-
   	PROGRAMME PRINCIPAL
   	*******************/
 
-main(C,V, Pmax) :-
+main(_C,_V, Pmax) :-
 	situation_initiale(I),
 	joueur_initial(J),
-	negamax(J,I,1,Pmax,[C,V]).
+	parcours(J,I,1,Pmax).
+	
+parcours(J,E,P,Pmax) :- 
+	negamax(J,E,P,Pmax,[[LigN,ColN],_V]),
+	write_ln("----------------------------"),
+	nth1(LigN,E,Lig), nth1(ColN,Lig,J),
+	write_ln(E),
+	adversaire(J,A),
+	parcours(A,E,1,Pmax).
 
 
 	/*
