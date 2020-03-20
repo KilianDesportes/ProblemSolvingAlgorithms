@@ -120,6 +120,7 @@ faut pas realiser l'unification.
 
 
 unifiable(X,J) :- not(not(X=J)).
+
 /**********************************
 DEFINITION D'UN ALIGNEMENT GAGNANT
 OU PERDANT POUR UN JOUEUR DONNE J
